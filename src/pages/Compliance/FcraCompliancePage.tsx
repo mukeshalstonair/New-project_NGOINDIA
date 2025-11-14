@@ -34,10 +34,23 @@ export function FcraCompliancePage() {
       const response = await api.getDonations();
       const fcraDonations = response.results || [];
       
-      setDonations(fcraDonations);
+      // Also load from localStorage as fallback
+      const localDonations = JSON.parse(localStorage.getItem('fcra_donations') || '[]');
+      const dashboardDonations = JSON.parse(localStorage.getItem('donations') || '[]');
+      
+      // Combine all donations and remove duplicates
+      const allDonations = [...fcraDonations, ...localDonations, ...dashboardDonations];
+      const uniqueDonations = allDonations.filter((donation, index, self) => 
+        index === self.findIndex(d => d.id === donation.id || (d.donorName === donation.donorName && d.amount === donation.amount))
+      );
+      
+      setDonations(uniqueDonations);
     } catch (error) {
       console.error('Failed to load donations:', error);
-      setDonations([]);
+      // Fallback to localStorage
+      const localDonations = JSON.parse(localStorage.getItem('fcra_donations') || '[]');
+      const dashboardDonations = JSON.parse(localStorage.getItem('donations') || '[]');
+      setDonations([...localDonations, ...dashboardDonations]);
     }
   };
 
@@ -176,10 +189,10 @@ export function FcraCompliancePage() {
         </div>
       </div>
 
-      {/* Foreign Donations Table */}
+      {/* All Donations Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
-          <h3 className="text-xl font-semibold text-gray-900">Foreign Donations ({foreignDonations.length})</h3>
+          <h3 className="text-xl font-semibold text-gray-900">All Donations ({donations.length}) - Foreign: {foreignDonations.length}</h3>
         </div>
         
         <div className="overflow-x-auto">

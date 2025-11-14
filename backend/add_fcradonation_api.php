@@ -60,10 +60,33 @@ try {
         ':type' => $input['type'] ?? 'one-time'
     ]);
     
+    $donationId = $pdo->lastInsertId();
+    
+    // Return the complete donation data for frontend integration
     echo json_encode([
         'success' => true,
         'message' => 'FCRA donation added successfully',
-        'id' => $pdo->lastInsertId()
+        'id' => $donationId,
+        'donation' => [
+            'id' => $donationId,
+            'donorName' => $input['donorName'],
+            'donorCountry' => $input['donorCountry'] ?? null,
+            'isForeign' => $input['isForeign'] ? true : false,
+            'remittanceRef' => $input['remittanceRef'] ?? null,
+            'currency' => $input['currency'] ?? 'INR',
+            'amount' => $input['amount'],
+            'convertedAmount' => $input['convertedAmount'],
+            'conversionRate' => $input['conversionRate'] ?? 1,
+            'FIRC' => $input['FIRC'] ?? null,
+            'purposeTag' => $input['purposeTag'],
+            'usageRestriction' => $input['usageRestriction'] ?? null,
+            'notes' => $input['notes'] ?? null,
+            'attachments' => $input['attachments'] ?? [],
+            'createdBy' => $input['createdBy'],
+            'status' => $input['status'] ?? 'completed',
+            'type' => $input['type'] ?? 'one-time',
+            'createdAt' => date('Y-m-d H:i:s')
+        ]
     ]);
     
 } catch (Exception $e) {

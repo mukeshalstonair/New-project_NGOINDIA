@@ -160,14 +160,27 @@ class ApiService {
         body: JSON.stringify(data),
       });
       const result = await response.json();
+      
+      if (result.success) {
+        // Also save to localStorage for immediate access
+        const donations = JSON.parse(localStorage.getItem('fcra_donations') || '[]');
+        donations.push(result.donation);
+        localStorage.setItem('fcra_donations', JSON.stringify(donations));
+      }
+      
       return result;
     } catch (error) {
+      console.warn('Backend unavailable, using localStorage fallback');
       // Fallback to localStorage
       const donations = JSON.parse(localStorage.getItem('fcra_donations') || '[]');
-      const newDonation = { ...data, id: Date.now().toString() };
+      const newDonation = { 
+        ...data, 
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      };
       donations.push(newDonation);
       localStorage.setItem('fcra_donations', JSON.stringify(donations));
-      return newDonation;
+      return { success: true, donation: newDonation };
     }
   }
 

@@ -15,6 +15,7 @@ interface FcraDonationFormProps {
 export function FcraDonationForm({ onBack, editingDonation }: FcraDonationFormProps) {
   const { user } = useAuth();
   const { addDonation } = useDashboard();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     donorName: editingDonation?.donorName || '',
     donorCountry: editingDonation?.donorCountry || '',
@@ -59,23 +60,92 @@ export function FcraDonationForm({ onBack, editingDonation }: FcraDonationFormPr
       type: 'one-time' as const
     };
 
+    setIsLoading(true);
+    
     try {
       if (editingDonation) {
         await api.updateDonation(editingDonation.id, donationData);
       } else {
-        await api.createDonation(donationData);
+        // Save to FCRA donations table
+        const fcraResult = await api.createDonation(donationData);
         
-        // Also add to regular donations for dashboard integration
+        if (!fcraResult.success) {
+          throw new Error(fcraResult.error || 'Failed to save FCRA donation');
+        }
+        
+        // Also add to regular donations table for dashboard integration
+        const regularDonationData = {
+          name: formData.donorName,
+          email: '', // FCRA donations may not have email
+          amount: convertedAmount,
+          category: 'money',
+          donorType: 'individual',
+          purpose: formData.purposeTag,
+          message: formData.notes,
+          paymentMethod: formData.isForeign ? 'foreign_transfer' : 'bank_transfer'
+        };
+        
+        try {
+          const donationResponse = await fetch('http://localhost/NGO-India/backend/add_donations_api.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(regularDonationData)
+          });
+          const donationResult = await donationResponse.json();
+          console.log('Regular donation saved:', donationResult.success);
+        } catch (donationError) {
+          console.warn('Failed to save to regular donations:', donationError);
+        }
+        
+        // Add to donor management system
+        const donorData = {
+          donorName: formData.donorName,
+          donorEmail: '', // FCRA donations may not have email
+          amount: convertedAmount,
+          donationType: 'one-time',
+          purpose: formData.purposeTag,
+          notes: `${formData.isForeign ? 'Foreign donation' : 'Domestic donation'}${formData.donorCountry ? ` from ${formData.donorCountry}` : ''}${formData.remittanceRef ? ` (Ref: ${formData.remittanceRef})` : ''}`
+        };
+        
+        try {
+          const donorResponse = await fetch('http://localhost/NGO-India/backend/add_donor_api.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(donorData)
+          });
+          const donorResult = await donorResponse.json();
+          console.log('Donor saved:', donorResult.success);
+        } catch (donorError) {
+          console.warn('Failed to save to donor management:', donorError);
+        }
+        
+        // Also add to dashboard context for immediate UI update
         addDonation({
           donor: formData.donorName,
           amount: convertedAmount,
           date: new Date().toISOString().split('T')[0],
-          type: 'one-time'
+          type: 'one-time',
+          isForeign: formData.isForeign,
+          donorCountry: formData.donorCountry,
+          currency: formData.currency,
+          convertedAmount,
+          purposeTag: formData.purposeTag,
+          notes: formData.notes
         });
       }
+      
+      // Show success message
+      alert('Donation saved successfully! It will appear in FCRA Compliance, Foreign Donations, and Donor Management.');
       onBack?.();
     } catch (error) {
       console.error('Failed to save donation:', error);
+      alert(`Failed to save donation: ${error.message || 'Please try again.'}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -319,9 +389,10 @@ export function FcraDonationForm({ onBack, editingDonation }: FcraDonationFormPr
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              className="flex-1 bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+              disabled={isLoading}
+              className="flex-1 bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {editingDonation ? 'Update' : 'Save'} Donation
+              {isLoading ? 'Saving...' : (editingDonation ? 'Update' : 'Save')} Donation
             </button>
             {onBack && (
               <button
