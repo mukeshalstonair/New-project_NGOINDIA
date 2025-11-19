@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, IndianRupee } from 'lucide-react';
+import { ArrowLeft, IndianRupee, Upload, FileText } from 'lucide-react';
 import { useDashboard } from '../../contexts/DashboardContext';
+import { logAction } from '../../utils/auditApi';
 
 export function AddDonation() {
   const { addDonation } = useDashboard();
@@ -12,6 +13,8 @@ export function AddDonation() {
     purpose: '',
     notes: ''
   });
+  const [originalNotes, setOriginalNotes] = useState('');
+  const [attachedImage, setAttachedImage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,17 +27,32 @@ export function AddDonation() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.donorName,
-          email: formData.donorEmail,
+          donorName: formData.donorName,
+          donorEmail: formData.donorEmail,
           amount: parseFloat(formData.amount),
-          donor_type: formData.donationType,
+          donationType: formData.donationType,
           purpose: formData.purpose,
-          notes: formData.notes
+          notes: formData.notes,
+          userId: 1 // Replace with actual user ID from auth context
         })
       });
       
       const result = await response.json();
       if (result.success) {
+        // Log text changes if notes were modified
+        if (originalNotes !== formData.notes && originalNotes) {
+          await logAction.textChange('donors', result.id.toString(), 'notes', originalNotes, formData.notes, 1);
+        }
+        
+        // Log image upload if image was attached
+        if (attachedImage) {
+          await logAction.imageUpload('donors', result.id.toString(), attachedImage, {
+            size: 0, // Would be actual file size
+            type: 'image/jpeg', // Would be actual file type
+            dimensions: '800x600' // Would be actual dimensions
+          }, 1);
+        }
+        
         alert('Donor added successfully to database!');
       } else {
         console.log('Backend failed, using local storage:', result.message);
@@ -55,6 +73,25 @@ export function AddDonation() {
     setTimeout(() => {
       window.location.href = '/';
     }, 1000);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageUrl = event.target?.result as string;
+        setAttachedImage(imageUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleNotesChange = (value: string) => {
+    if (!originalNotes && formData.notes) {
+      setOriginalNotes(formData.notes);
+    }
+    setFormData({ ...formData, notes: value });
   };
 
   return (
@@ -145,13 +182,43 @@ export function AddDonation() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-orange-600 mb-2">Notes</label>
+              <label className="block text-sm font-medium text-orange-600 mb-2">
+                <FileText className="w-4 h-4 inline mr-1" />
+                Notes (Text changes are audited)
+              </label>
               <textarea
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) => handleNotesChange(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500 hover:border-orange-400"
                 rows={3}
+                placeholder="Enter any additional notes about this donation..."
               />
+              {originalNotes && originalNotes !== formData.notes && (
+                <p className="text-xs text-yellow-600 mt-1">
+                  ⚠️ Text changes will be logged in audit trail
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-orange-600 mb-2">
+                <Upload className="w-4 h-4 inline mr-1" />
+                Attach Document/Image (Uploads are audited)
+              </label>
+              <input
+                type="file"
+                accept="image/*,.pdf,.doc,.docx"
+                onChange={handleImageUpload}
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-orange-500 hover:border-orange-400"
+              />
+              {attachedImage && (
+                <div className="mt-2">
+                  <p className="text-xs text-green-600">✓ File attached - upload will be logged in audit trail</p>
+                  {attachedImage.startsWith('data:image') && (
+                    <img src={attachedImage} alt="Preview" className="mt-2 max-w-xs max-h-32 object-cover rounded" />
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

@@ -22,6 +22,7 @@ import { PartnerNetwork } from './modules/PartnerNetwork';
 import { GrantApplicationModule } from './modules/GrantApplication';
 import { CSRModule } from './modules/CSRModule';
 import { SectorNetworks } from './modules/SectorNetworks';
+import { AuditTrailModule } from './modules/AuditTrailModule';
 
 
  
@@ -46,7 +47,8 @@ export type ActiveModule =
   | 'partner-network'
   | 'grant-applications'
   | 'csr'
-  | 'sector-networks';
+  | 'sector-networks'
+  | 'audit-logs';
 
 export function Dashboard() {
   const { user } = useAuth();
@@ -130,6 +132,8 @@ export function Dashboard() {
         return <CSRModule />;
       case 'sector-networks':
         return <SectorNetworks />;
+      case 'audit-logs':
+        return <AuditTrailModule />;
       default:
         return <div className="p-8 text-center text-gray-500">Module under development</div>;
     }

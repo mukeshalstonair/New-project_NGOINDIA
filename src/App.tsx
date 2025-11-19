@@ -40,6 +40,7 @@ import { GrantPages } from './components/pages/GrantPages';
 import { AddEmployee } from './components/pages/AddEmployee';
 import StaffProfile from './components/pages/StaffProfile';
 import PerformanceReviewDetails from './components/pages/PerformanceReviewDetails';
+import { AuditLogDashboard } from './components/pages/AuditLogDashboard';
 
 
 

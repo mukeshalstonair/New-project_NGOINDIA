@@ -3,7 +3,7 @@ import {
   Home, Users, DollarSign, FolderOpen, Network, 
   UserCheck, FileText, Settings, LogOut, Bell,
   ChevronRight, Heart, Shield, BookOpen,
-  IndianRupee, TrendingUp, Scale, FileCheck
+  IndianRupee, TrendingUp, Scale, FileCheck, Activity
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { ActiveModule } from './Dashboard';
@@ -55,6 +55,7 @@ export function Sidebar({ activeModule, setActiveModule }: SidebarProps) {
       { id: 'csr', label: 'CSR Management', icon: Heart, available: true },
       { id: 'sector-networks', label: 'Sector Networks', icon: Network, available: true },
       { id: 'RegisterNGO', label: 'Register NGO', icon: Users, available: ['admin', 'executive'].includes(user?.role || '') },
+      { id: 'audit-logs', label: 'Audit Trail', icon: Activity, available: user?.role === 'admin' },
       { id: 'settings', label: 'Settings', icon: Settings, available: true },
     ];
 

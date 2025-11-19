@@ -1,0 +1,10 @@
+# Windows-compatible requirements (no MySQL/Pillow compilation needed)
+Django==5.2.7
+djangorestframework==3.15.2
+django-cors-headers==4.6.0
+python-decouple==3.8
+requests==2.31.0
+
+# Optional: Install these separately if needed
+# For MySQL: pip install PyMySQL (pure Python MySQL client)
+# For Images: pip install Pillow --only-binary=all (pre-compiled binary)

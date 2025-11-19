@@ -1,4 +1,6 @@
 <?php
+require_once 'audit_middleware.php';
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -30,24 +32,22 @@ try {
     $pdo = new PDO("mysql:host=$servername;port=$port;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    $sql = "INSERT INTO donors (donor_name, donor_email, amount, donation_type, purpose, notes) 
-            VALUES (:donor_name, :donor_email, :amount, :donation_type, :purpose, :notes)";
+    $donorData = [
+        'donor_name' => $input['donorName'],
+        'donor_email' => $input['donorEmail'] ?? null,
+        'amount' => $input['amount'],
+        'donation_type' => $input['donationType'],
+        'purpose' => $input['purpose'] ?? null,
+        'notes' => $input['notes'] ?? null
+    ];
     
-    $stmt = $pdo->prepare($sql);
-    $result = $stmt->execute([
-        ':donor_name' => $input['donorName'],
-        ':donor_email' => $input['donorEmail'] ?? null,
-        ':amount' => $input['amount'],
-        ':donation_type' => $input['donationType'],
-        ':purpose' => $input['purpose'] ?? null,
-        ':notes' => $input['notes'] ?? null
-    ]);
+    $donorId = auditedInsert('donors', $donorData, $input['userId'] ?? null);
     
-    if ($result) {
+    if ($donorId) {
         echo json_encode([
             'success' => true,
             'message' => 'Donor added successfully',
-            'id' => $pdo->lastInsertId()
+            'id' => $donorId
         ]);
     } else {
         echo json_encode(['success' => false, 'error' => 'Failed to add donor']);
