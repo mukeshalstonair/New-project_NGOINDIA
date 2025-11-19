@@ -11,7 +11,6 @@ import { DashboardProvider } from './contexts/DashboardContext';
 import { Chatbot } from './components/Chatbot';
 import { useChatbot } from './hooks/useChatbot';
 import { VolunteerPage } from './components/pages/Volunteer';
-  
 import { WhatsAppChat } from './components/pages/WhatsAppChat';
 import { AddDonation } from './components/pages/AddDonation';
 import { RecordExpense } from './components/pages/RecordExpense';
@@ -20,7 +19,6 @@ import { DonorDetails } from './components/pages/DonorDetails';
 import { AddNGO } from './components/pages/AddNGO';
 import { WhatsAppCommunication } from './components/pages/WhatsAppCommunication';
 import { JoinNetwork } from './components/pages/JoinNetwork';
-
 import { CampaignsPage } from './components/pages/CampaignsPage';
 import { CampaignDetailsPage } from './components/pages/CampaignDetailsPage';
 import { CreateCampaignPage } from './components/pages/CreateCampaignPage';
@@ -35,8 +33,7 @@ import { JoinMembershipPage } from './components/pages/JoinMembershipPage';
 import { PartnerNetworkPage } from './pages/PartnerNetworkPage';
 import { BrowseGrants } from './components/pages/BrowseGrants';
 import { GrantPages } from './components/pages/GrantPages';
-
-
+import { CSRLandingPage } from './components/CSRLandingPage';
 import { AddEmployee } from './components/pages/AddEmployee';
 import StaffProfile from './components/pages/StaffProfile';
 import PerformanceReviewDetails from './components/pages/PerformanceReviewDetails';
@@ -216,6 +213,10 @@ if (currentPage.startsWith('/grant/matches/')) {
       <GrantPages type="matches" />
     </DashboardProvider>
   );
+}
+
+if (currentPage === '/csr-partnership') {
+  return <CSRLandingPage />;
 }
 
 
