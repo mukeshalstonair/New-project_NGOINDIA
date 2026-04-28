@@ -14,7 +14,7 @@ Poor transparency in fund utilization
 Limited access to technology
 This platform solves these challenges by creating a single unified ecosystem.
 
-****🚀 Key Features**
+**Key Features**
 
 **1. NGO Management System****
 NGO registration & verification
