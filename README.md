@@ -1,9 +1,7 @@
 **Overview**
 
-The NGO India Platform is a centralized digital ecosystem designed to connect Non-Governmental Organizations (NGOs), donors, volunteers, and beneficiaries across India.
-
+The **NGO India** Platform is a centralized digital ecosystem designed to connect Non-Governmental Organizations (NGOs), donors, volunteers, and beneficiaries across India.
 The platform aims to streamline NGO operations, improve transparency, and enable efficient collaboration by leveraging modern web technologies and AI-driven insights.
-
 It transforms fragmented NGO efforts into a structured, scalable, and impact-driven system.
 
 **🎯 Problem Statement**
