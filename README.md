@@ -4,7 +4,7 @@ The **NGO India** Platform is a centralized digital ecosystem designed to connec
 The platform aims to streamline NGO operations, improve transparency, and enable efficient collaboration by leveraging modern web technologies and AI-driven insights.
 It transforms fragmented NGO efforts into a structured, scalable, and impact-driven system.
 
-**🎯 Problem Statement**
+**Problem Statement**
 
 NGOs in India often face:
 
@@ -12,7 +12,6 @@ Lack of centralized visibility
 Inefficient donor and volunteer management
 Poor transparency in fund utilization
 Limited access to technology
-
 This platform solves these challenges by creating a single unified ecosystem.
 
 ****🚀 Key Features**
@@ -87,16 +86,6 @@ Role-based access control (RBAC)
 3.Volunteers apply for opportunities
 4.AI recommends best matches
 5.Admin monitors and manages ecosystem
-
-**Project Structure**
-ngo-india/
-│── client/        # Frontend application
-│── server/        # Backend services
-│── ai-engine/     # AI/ML modules
-│── docs/          # Documentation
-│── config/        # Environment configurations
-│── tests/         # Unit & integration tests
-
 
 **Contribution Guidelines**
 
