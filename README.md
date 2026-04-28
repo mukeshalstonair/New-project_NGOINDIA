@@ -56,3 +56,62 @@ AI-driven ecosystem for NGOs
 End-to-end digital transformation
 Transparency-first approach
 Scalable architecture for nationwide adoption
+
+
+**🛠️ Tech Stack**
+**Frontend**
+React.js / Next.js /Tailwind CSS / 
+
+**Backend**
+Node.js / Django RESTful APIs
+
+**Database**
+SQL/ PostgreSQL
+
+**AI & ML**
+Python (NLP, Recommendation Systems)
+OpenAI APIs / Custom ML Models
+
+**Cloud & DevOps**
+AWS / Azure / GCP
+Docker & CI/CD pipelines
+
+**Authentication & Security**
+JWT Authentication
+OAuth (Google login)
+Role-based access control (RBAC)
+
+**Workflow**
+1.NGOs register and get verified
+2.Donors browse NGOs and campaigns
+3.Volunteers apply for opportunities
+4.AI recommends best matches
+5.Admin monitors and manages ecosystem
+
+**Project Structure**
+ngo-india/
+│── client/        # Frontend application
+│── server/        # Backend services
+│── ai-engine/     # AI/ML modules
+│── docs/          # Documentation
+│── config/        # Environment configurations
+│── tests/         # Unit & integration tests
+
+
+**Contribution Guidelines**
+
+**Rules for Contributors**
+Follow clean code practices
+Write meaningful commit messages
+Use feature branches (feature/xyz)
+Ensure code is tested before PR
+
+**Pull Request Process**
+Fork the repo
+Create a new branch
+Make changes
+Submit PR with description
+
+
+
+
